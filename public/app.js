@@ -3,7 +3,7 @@ import {
   HandLandmarker,
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
 
-const APP_VERSION = "2026.06.27";
+const APP_VERSION = "2026.06.27.1";
 const MODEL_PATH = "/models/hand_landmarker.task";
 const WASM_ROOT = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm";
 
@@ -60,9 +60,11 @@ const state = {
   recorder: null,
   recorderMime: "",
   recorderExt: "webm",
+  recorderSession: 0,
   recordedChunks: [],
   running: false,
   saving: false,
+  clearing: false,
   sampleStarted: false,
   sampleStartedAt: 0,
   lastPenDownAt: 0,
@@ -326,6 +328,7 @@ function startRecorder() {
   if (!window.MediaRecorder) {
     return;
   }
+  const recorderSession = state.recorderSession + 1;
   const mimeType = pickMime();
   const stream = recordCanvas.captureStream
     ? recordCanvas.captureStream(RECORD_FPS)
@@ -338,10 +341,14 @@ function startRecorder() {
   }
 
   try {
+    state.recorderSession = recorderSession;
     state.recorderMime = mimeType || "video/webm";
     state.recorderExt = state.recorderMime.includes("mp4") ? "mp4" : "webm";
     state.recorder = new MediaRecorder(stream, options);
     state.recorder.ondataavailable = (event) => {
+      if (state.recorderSession !== recorderSession) {
+        return;
+      }
       if (event.data?.size) {
         state.recordedChunks.push(event.data);
       }
@@ -359,19 +366,44 @@ function currentVideoBlob() {
   return new Blob(state.recordedChunks, { type: state.recorderMime || "video/webm" });
 }
 
-function stopRecorder() {
+function stopRecorder({ discard = false } = {}) {
   if (!state.recorder || state.recorder.state === "inactive") {
+    state.recorder = null;
+    if (discard) {
+      state.recorderSession += 1;
+      state.recordedChunks = [];
+      return Promise.resolve(null);
+    }
     return Promise.resolve(currentVideoBlob());
   }
+  const recorder = state.recorder;
+  const recorderSession = state.recorderSession;
+  if (discard) {
+    state.recorderSession += 1;
+    state.recordedChunks = [];
+  }
   return new Promise((resolve) => {
-    const recorder = state.recorder;
-    recorder.addEventListener("stop", () => resolve(currentVideoBlob()), { once: true });
-    recorder.stop();
+    const finish = () => {
+      if (state.recorder === recorder) {
+        state.recorder = null;
+      }
+      if (discard || state.recorderSession !== recorderSession) {
+        resolve(null);
+        return;
+      }
+      resolve(currentVideoBlob());
+    };
+    recorder.addEventListener("stop", finish, { once: true });
+    try {
+      recorder.stop();
+    } catch (error) {
+      finish();
+    }
   });
 }
 
 function updateFromDetection(result, now) {
-  if (state.saving) {
+  if (state.saving || state.clearing) {
     return null;
   }
 
@@ -573,7 +605,7 @@ async function uploadSample({ imageBlob, videoBlob, metadata }) {
 }
 
 async function saveSample(auto = false) {
-  if (state.saving) {
+  if (state.saving || state.clearing) {
     return;
   }
   if (!state.feature.hasData() && !state.hasInk) {
@@ -633,6 +665,7 @@ function resetDrawing() {
   overlayCtx.clearRect(0, 0, els.overlay.width, els.overlay.height);
   state.feature.reset();
   state.prevPoint = null;
+  state.mode = "Pen up";
   state.hasInk = false;
   state.sampleStarted = false;
   state.sampleStartedAt = 0;
@@ -640,6 +673,7 @@ function resetDrawing() {
   state.recordedChunks = [];
   state.recorder = null;
   els.pauseBar.style.width = "0";
+  els.modeReadout.textContent = "Pen up";
   els.pointsReadout.textContent = "0";
 }
 
@@ -650,12 +684,23 @@ function showFlash() {
   }, 1000);
 }
 
-function clearSample() {
-  if (state.recorder?.state === "recording") {
-    state.recorder.stop();
+async function clearSample() {
+  if (state.saving || state.clearing) {
+    return;
   }
+  const hadSample = state.hasInk
+    || state.feature.hasData()
+    || state.sampleStarted
+    || state.recordedChunks.length > 0
+    || Boolean(state.recorder);
+  setButtonsDisabled(true);
+  state.clearing = true;
+  const stopPromise = stopRecorder({ discard: true }).catch(() => null);
   resetDrawing();
-  setUpload("Cleared", "neutral");
+  await stopPromise;
+  setUpload(hadSample ? "Cleared" : "Nothing to clear", "neutral");
+  state.clearing = false;
+  setButtonsDisabled(false);
 }
 
 function bindEvents() {
@@ -663,7 +708,9 @@ function bindEvents() {
     input.addEventListener("input", persistSettings);
   }
   els.saveBtn.addEventListener("click", () => saveSample(false));
-  els.clearBtn.addEventListener("click", clearSample);
+  els.clearBtn.addEventListener("click", () => {
+    clearSample();
+  });
 
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
@@ -688,7 +735,8 @@ function bindEvents() {
 async function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     try {
-      await navigator.serviceWorker.register("/sw.js");
+      const registration = await navigator.serviceWorker.register("/sw.js");
+      await registration.update().catch(() => null);
     } catch (error) {
       console.warn("Service worker registration failed", error);
     }

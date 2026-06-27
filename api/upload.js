@@ -66,7 +66,7 @@ function readConfig() {
     ok: true,
     githubToken,
     githubRepo,
-    branch: process.env.GITHUB_BRANCH || "main",
+    branch: process.env.GITHUB_BRANCH || "master",
     outputDir: trimSlashes(process.env.GITHUB_OUTPUT_DIR || "output"),
     uploadSecret: process.env.UPLOAD_SECRET || "",
     allowedOrigin: process.env.ALLOWED_ORIGIN || "",
@@ -221,6 +221,9 @@ async function commitFiles(config, files, message) {
       });
       return commit;
     } catch (error) {
+      if (error.statusCode === 404 && error.githubPath === `git/ref/heads/${config.branch}`) {
+        throw branchNotFoundError(config.branch);
+      }
       lastError = error;
       if (![409, 422].includes(error.statusCode) || attempt === 1) {
         throw error;
@@ -256,9 +259,16 @@ async function github(config, method, path, body) {
   if (!response.ok) {
     const error = new Error(data.message || `GitHub API error ${response.status}`);
     error.statusCode = response.status;
+    error.githubPath = path;
     throw error;
   }
   return data;
+}
+
+function branchNotFoundError(branch) {
+  const error = new Error(`GitHub branch "${branch}" was not found. Set GITHUB_BRANCH to the branch Vercel deploys from, such as "master".`);
+  error.statusCode = 400;
+  return error;
 }
 
 function safe(value) {

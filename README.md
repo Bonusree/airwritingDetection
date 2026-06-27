@@ -66,7 +66,7 @@ Install Command: empty
 ```text
 GITHUB_TOKEN=your_fine_grained_github_token
 GITHUB_REPO=your-github-username/airwriting
-GITHUB_BRANCH=main
+GITHUB_BRANCH=master
 GITHUB_OUTPUT_DIR=output
 ```
 
@@ -125,6 +125,18 @@ If it does not save, check the Vercel function logs for `/api/upload`. Most fail
 - `Invalid upload key`
 - GitHub token does not have `Contents: Read and write`
 - Sample video is larger than `MAX_SAMPLE_BYTES`
+
+## Updating The Deployed App
+
+If this repository is connected to Vercel, a local commit only updates the deployed app after you push it to the branch Vercel deploys from. For example:
+
+```bash
+git add .env.example README.md api/upload.js public/app.js public/styles.css public/sw.js
+git commit -m "Fix app controls"
+git push origin master
+```
+
+Vercel then creates a new deployment automatically, unless automatic deployments are disabled. If you deployed manually, run `npm run deploy` instead.
 
 ## Delete Saved Samples
 

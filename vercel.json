@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/upload.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
     {
       "source": "/",

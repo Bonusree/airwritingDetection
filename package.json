@@ -4,6 +4,7 @@
   "private": true,
   "description": "Browser based air-writing collector with GitHub uploads.",
   "scripts": {
+    "build": "echo \"No build step required\"",
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   },

@@ -2,10 +2,7 @@
 
 Air Writing Collector lets users draw in the air with a webcam, then saves a trajectory image, recorded video, and JSON feature metadata.
 
-The project now has two modes:
-
-- **Deployable PWA:** users open a website on Windows, Linux, Android, or any modern browser. They do not install Python, Flask, OpenCV, or MediaPipe.
-- **Local Python collector:** the original desktop/web research script still works for local development.
+Users open a website on Windows, Linux, Android, or any modern browser. They do not install Python, Flask, OpenCV, or MediaPipe.
 
 ## What Gets Saved
 
@@ -54,7 +51,17 @@ Keep this token private. Never put it in `public/app.js`, HTML, or any browser c
 
 1. Go to Vercel.
 2. Import this GitHub repository.
-3. Add these environment variables:
+3. In project settings, use:
+
+```text
+Framework Preset: Other
+Root Directory: ./
+Build Command: empty
+Output Directory: empty
+Install Command: empty
+```
+
+4. Add these environment variables:
 
 ```text
 GITHUB_TOKEN=your_fine_grained_github_token
@@ -80,9 +87,9 @@ The upload key is **not** your GitHub token.
 - If `UPLOAD_SECRET=abc123`, users type `abc123` into the app's Upload key field.
 - If `UPLOAD_SECRET` is empty, leave the app's Upload key field empty.
 
-4. Deploy.
-5. Open the Vercel URL on desktop or Android and allow camera access.
-6. Use the browser install button or the browser's install/add-to-home-screen menu.
+5. Deploy.
+6. Open the Vercel URL on desktop or Android and allow camera access.
+7. Use the browser install button or the browser's install/add-to-home-screen menu.
 
 ## Local PWA Development
 
@@ -135,25 +142,6 @@ git commit -m "Delete bad airwriting sample"
 git push
 ```
 
-## Original Python Mode
-
-The Python collector is still available for local-only use.
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python airwriting.py
-```
-
-Web/mobile local mode:
-
-```bash
-python airwriting.py --web --ssl
-```
-
-Local Python mode saves files into the local `output/` directory. The deployed PWA saves files into GitHub through `api/upload.js`.
-
 ## Project Structure
 
 ```text
@@ -165,10 +153,7 @@ airwriting/
 │   ├── manifest.webmanifest
 │   ├── models/hand_landmarker.task
 │   └── styles.css
-├── airwriting.py                 # Original Python collector
-├── hand_landmarker.task          # Source model copy
 ├── package.json                  # Vercel scripts
-├── requirements.txt              # Python dependencies
 └── vercel.json                   # Deployment routing
 ```
 

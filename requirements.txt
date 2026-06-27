@@ -1,3 +1,9 @@
 mediapipe>=0.10.0
 opencv-python>=4.8.0
 numpy>=1.24.0
+
+# web/mobile mode
+flask>=3.0.0
+
+# HTTPS for mobile camera (optional but recommended with --ssl)
+pyOpenSSL>=23.0.0

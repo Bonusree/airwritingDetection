@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Air Writing">
+  <rect width="128" height="128" rx="24" fill="#101418"/>
+  <path d="M27 78c13-33 31-49 50-49 12 0 22 6 22 17 0 10-9 16-20 16H54c-13 0-23 9-23 21 0 10 8 17 20 17 19 0 34-15 50-44" fill="none" stroke="#38d879" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="82" cy="45" r="9" fill="#46c4d9"/>
+  <circle cx="39" cy="88" r="7" fill="#f2b84b"/>
+</svg>

@@ -3,7 +3,7 @@ import {
   HandLandmarker,
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
 
-const APP_VERSION = "2026.06.27.1";
+const APP_VERSION = "2026.06.27.2";
 const MODEL_PATH = "/models/hand_landmarker.task";
 const WASM_ROOT = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm";
 
@@ -14,6 +14,9 @@ const ERASE_RADIUS = 32;
 const BRUSH_SIZE = 9;
 const RECORD_FPS = 24;
 const RECORD_BITS_PER_SECOND = 500000;
+const RECORDER_STOP_TIMEOUT_MS = 1500;
+const UPLOAD_TIMEOUT_MS = 60000;
+const BANGLA_VOWELS = ["অ", "আ", "ই", "ঈ", "উ", "ঊ", "ঋ", "এ", "ঐ", "ও", "ঔ"];
 
 const TIP_IDS = [4, 8, 12, 16, 20];
 const PIP_IDS = [3, 6, 10, 14, 18];
@@ -181,14 +184,19 @@ function setCamera(text, kind = "neutral") {
 
 function loadSettings() {
   els.username.value = localStorage.getItem("airwriting.username") || els.username.value;
-  els.label.value = localStorage.getItem("airwriting.label") || els.label.value;
+  const savedLabel = localStorage.getItem("airwriting.label");
+  els.label.value = BANGLA_VOWELS.includes(savedLabel) ? savedLabel : BANGLA_VOWELS[0];
   els.uploadKey.value = localStorage.getItem("airwriting.uploadKey") || "";
 }
 
 function persistSettings() {
   localStorage.setItem("airwriting.username", els.username.value.trim() || "user1");
-  localStorage.setItem("airwriting.label", els.label.value.trim() || "A");
+  localStorage.setItem("airwriting.label", normalizedLabel());
   localStorage.setItem("airwriting.uploadKey", els.uploadKey.value);
+}
+
+function normalizedLabel() {
+  return BANGLA_VOWELS.includes(els.label.value) ? els.label.value : BANGLA_VOWELS[0];
 }
 
 function resizeCanvas(canvas, w, h, preserve = false) {
@@ -383,7 +391,13 @@ function stopRecorder({ discard = false } = {}) {
     state.recordedChunks = [];
   }
   return new Promise((resolve) => {
+    let settled = false;
     const finish = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      window.clearTimeout(timeoutId);
       if (state.recorder === recorder) {
         state.recorder = null;
       }
@@ -393,8 +407,13 @@ function stopRecorder({ discard = false } = {}) {
       }
       resolve(currentVideoBlob());
     };
+    const timeoutId = window.setTimeout(finish, RECORDER_STOP_TIMEOUT_MS);
     recorder.addEventListener("stop", finish, { once: true });
+    recorder.addEventListener("error", finish, { once: true });
     try {
+      if (!discard && typeof recorder.requestData === "function") {
+        recorder.requestData();
+      }
       recorder.stop();
     } catch (error) {
       finish();
@@ -592,11 +611,24 @@ async function uploadSample({ imageBlob, videoBlob, metadata }) {
     headers["x-upload-secret"] = uploadKey;
   }
 
-  const response = await fetch("/api/upload", {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload),
-  });
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), UPLOAD_TIMEOUT_MS);
+  let response;
+  try {
+    response = await fetch("/api/upload", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("Upload timed out. Check Vercel logs and GitHub token settings.");
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
   const data = await response.json().catch(() => ({}));
   if (!response.ok || !data.ok) {
     throw new Error(data.error || `Upload failed (${response.status})`);
@@ -627,7 +659,7 @@ async function saveSample(auto = false) {
       app_version: APP_VERSION,
       sample_id: sampleId,
       username: els.username.value.trim() || "user1",
-      label: els.label.value.trim() || "A",
+      label: normalizedLabel(),
       created_at: createdAt.toISOString(),
       auto_saved: auto,
       frame_size: [els.overlay.width, els.overlay.height],
@@ -706,6 +738,7 @@ async function clearSample() {
 function bindEvents() {
   for (const input of [els.username, els.label, els.uploadKey]) {
     input.addEventListener("input", persistSettings);
+    input.addEventListener("change", persistSettings);
   }
   els.saveBtn.addEventListener("click", () => saveSample(false));
   els.clearBtn.addEventListener("click", () => {

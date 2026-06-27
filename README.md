@@ -19,6 +19,7 @@ Each sample contains:
 - `{label}_{sample_id}.json` - metadata and 8-D trajectory features
 
 The exact video format depends on the user's browser.
+The app label menu uses Bangla vowels: `অ`, `আ`, `ই`, `ঈ`, `উ`, `ঊ`, `ঋ`, `এ`, `ঐ`, `ও`, `ঔ`.
 
 ## Deploy For Public Users
 
@@ -131,7 +132,7 @@ If it does not save, check the Vercel function logs for `/api/upload`. Most fail
 If this repository is connected to Vercel, a local commit only updates the deployed app after you push it to the branch Vercel deploys from. For example:
 
 ```bash
-git add .env.example README.md api/upload.js public/app.js public/styles.css public/sw.js
+git add .env.example README.md api/upload.js public/index.html public/app.js public/styles.css public/sw.js
 git commit -m "Fix app controls"
 git push origin master
 ```

@@ -272,8 +272,11 @@ function branchNotFoundError(branch) {
 }
 
 function safe(value) {
-  const text = String(value || "").trim();
-  return text.replace(/[^a-zA-Z0-9_.-]/g, "_") || "x";
+  const text = String(value || "").trim().normalize("NFC");
+  return text
+    .replace(/[^\p{L}\p{M}\p{N}_.-]/gu, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "") || "x";
 }
 
 function safeExtension(value) {

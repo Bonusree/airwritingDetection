@@ -3,7 +3,7 @@ import {
   HandLandmarker,
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
 
-const APP_VERSION = "2026.06.27.2";
+const APP_VERSION = "2026.06.27.3";
 const MODEL_PATH = "/models/hand_landmarker.task";
 const WASM_ROOT = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm";
 
@@ -16,6 +16,9 @@ const RECORD_FPS = 24;
 const RECORD_BITS_PER_SECOND = 500000;
 const RECORDER_STOP_TIMEOUT_MS = 1500;
 const UPLOAD_TIMEOUT_MS = 60000;
+const CANVAS_BLOB_TIMEOUT_MS = 2500;
+const FILE_READER_TIMEOUT_MS = 10000;
+const CLEAR_COOLDOWN_MS = 1400;
 const BANGLA_VOWELS = ["অ", "আ", "ই", "ঈ", "উ", "ঊ", "ঋ", "এ", "ঐ", "ও", "ঔ"];
 
 const TIP_IDS = [4, 8, 12, 16, 20];
@@ -38,6 +41,7 @@ const els = {
   blockedDetail: document.getElementById("blockedDetail"),
   cameraStatus: document.getElementById("cameraStatus"),
   uploadStatus: document.getElementById("uploadStatus"),
+  versionStatus: document.getElementById("versionStatus"),
   pauseBar: document.getElementById("pauseBar"),
   saveFlash: document.getElementById("saveFlash"),
   username: document.getElementById("username"),
@@ -68,6 +72,9 @@ const state = {
   running: false,
   saving: false,
   clearing: false,
+  clearUntil: 0,
+  operationId: 0,
+  uploadController: null,
   sampleStarted: false,
   sampleStartedAt: 0,
   lastPenDownAt: 0,
@@ -182,6 +189,12 @@ function setCamera(text, kind = "neutral") {
   setPill(els.cameraStatus, text, kind);
 }
 
+function setVersion() {
+  if (els.versionStatus) {
+    setPill(els.versionStatus, `v${APP_VERSION}`, "neutral");
+  }
+}
+
 function loadSettings() {
   els.username.value = localStorage.getItem("airwriting.username") || els.username.value;
   const savedLabel = localStorage.getItem("airwriting.label");
@@ -197,6 +210,12 @@ function persistSettings() {
 
 function normalizedLabel() {
   return BANGLA_VOWELS.includes(els.label.value) ? els.label.value : BANGLA_VOWELS[0];
+}
+
+function assertCurrentOperation(operationId) {
+  if (operationId !== state.operationId) {
+    throw new Error("Operation cancelled");
+  }
 }
 
 function resizeCanvas(canvas, w, h, preserve = false) {
@@ -425,6 +444,12 @@ function updateFromDetection(result, now) {
   if (state.saving || state.clearing) {
     return null;
   }
+  if (now < state.clearUntil) {
+    state.prevPoint = null;
+    state.mode = "Pen up";
+    els.modeReadout.textContent = "Pen up";
+    return null;
+  }
 
   const landmarks = result?.landmarks?.[0] || null;
   let mode = "Pen up";
@@ -556,7 +581,19 @@ function tick(now) {
 }
 
 function canvasToBlob(canvas, type = "image/png") {
-  return new Promise((resolve) => canvas.toBlob(resolve, type));
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (blob) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      window.clearTimeout(timeoutId);
+      resolve(blob || null);
+    };
+    const timeoutId = window.setTimeout(() => finish(null), CANVAS_BLOB_TIMEOUT_MS);
+    canvas.toBlob(finish, type);
+  });
 }
 
 function blobToDataUrl(blob) {
@@ -565,9 +602,23 @@ function blobToDataUrl(blob) {
       resolve(null);
       return;
     }
+    let settled = false;
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
+    const finish = (callback) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      window.clearTimeout(timeoutId);
+      callback();
+    };
+    const timeoutId = window.setTimeout(() => {
+      reader.abort();
+      finish(() => reject(new Error("Media preparation timed out")));
+    }, FILE_READER_TIMEOUT_MS);
+    reader.onload = () => finish(() => resolve(reader.result));
+    reader.onerror = () => finish(() => reject(reader.error || new Error("Media preparation failed")));
+    reader.onabort = () => finish(() => reject(new Error("Media preparation cancelled")));
     reader.readAsDataURL(blob);
   });
 }
@@ -582,9 +633,21 @@ function makeSampleId(date = new Date()) {
   return `${stamp}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-async function uploadSample({ imageBlob, videoBlob, metadata }) {
+async function uploadSample({ imageBlob, videoBlob, metadata, operationId }) {
+  setUpload("Preparing image", "warn");
   const imageDataUrl = await blobToDataUrl(imageBlob);
-  const videoDataUrl = await blobToDataUrl(videoBlob);
+  assertCurrentOperation(operationId);
+  let videoDataUrl = null;
+  if (videoBlob) {
+    setUpload("Preparing video", "warn");
+    try {
+      videoDataUrl = await blobToDataUrl(videoBlob);
+    } catch (error) {
+      console.warn("Video skipped", error);
+      videoBlob = null;
+    }
+    assertCurrentOperation(operationId);
+  }
   const uploadKey = els.uploadKey.value;
   const payload = {
     username: metadata.username,
@@ -611,7 +674,10 @@ async function uploadSample({ imageBlob, videoBlob, metadata }) {
     headers["x-upload-secret"] = uploadKey;
   }
 
+  assertCurrentOperation(operationId);
+  setUpload("Uploading", "warn");
   const controller = new AbortController();
+  state.uploadController = controller;
   const timeoutId = window.setTimeout(() => controller.abort(), UPLOAD_TIMEOUT_MS);
   let response;
   try {
@@ -623,10 +689,13 @@ async function uploadSample({ imageBlob, videoBlob, metadata }) {
     });
   } catch (error) {
     if (error.name === "AbortError") {
-      throw new Error("Upload timed out. Check Vercel logs and GitHub token settings.");
+      throw new Error("Upload cancelled or timed out. Check Vercel logs and GitHub token settings.");
     }
     throw error;
   } finally {
+    if (state.uploadController === controller) {
+      state.uploadController = null;
+    }
     window.clearTimeout(timeoutId);
   }
   const data = await response.json().catch(() => ({}));
@@ -640,11 +709,17 @@ async function saveSample(auto = false) {
   if (state.saving || state.clearing) {
     return;
   }
+  if (!state.feature) {
+    setUpload("Camera still loading", "warn");
+    return;
+  }
   if (!state.feature.hasData() && !state.hasInk) {
     setUpload("Nothing to save", "warn");
     return;
   }
 
+  const operationId = state.operationId + 1;
+  state.operationId = operationId;
   state.saving = true;
   setButtonsDisabled(true);
   setUpload(auto ? "Auto-saving" : "Saving", "warn");
@@ -652,8 +727,16 @@ async function saveSample(auto = false) {
   try {
     const createdAt = new Date();
     const sampleId = makeSampleId(createdAt);
+    setUpload("Stopping recorder", "warn");
     const videoBlob = await stopRecorder();
+    if (operationId !== state.operationId) {
+      return;
+    }
+    setUpload("Preparing drawing", "warn");
     const imageBlob = await canvasToBlob(inkCanvas);
+    if (operationId !== state.operationId) {
+      return;
+    }
     const metadata = {
       app: "airwriting-pwa",
       app_version: APP_VERSION,
@@ -672,7 +755,10 @@ async function saveSample(auto = false) {
       user_agent: navigator.userAgent,
     };
 
-    const result = await uploadSample({ imageBlob, videoBlob, metadata });
+    const result = await uploadSample({ imageBlob, videoBlob, metadata, operationId });
+    if (operationId !== state.operationId) {
+      return;
+    }
     state.savedCount += 1;
     els.savedReadout.textContent = String(state.savedCount);
     setUpload("Uploaded", "good");
@@ -680,22 +766,26 @@ async function saveSample(auto = false) {
     resetDrawing();
     console.info("Saved sample", result.paths, result.commit);
   } catch (error) {
-    setUpload(error.message || "Upload failed", "bad");
+    if (operationId === state.operationId) {
+      setUpload(error.message || "Upload failed", "bad");
+    }
   } finally {
-    state.saving = false;
-    setButtonsDisabled(false);
+    if (operationId === state.operationId) {
+      state.saving = false;
+      setButtonsDisabled(false);
+    }
   }
 }
 
 function setButtonsDisabled(disabled) {
   els.saveBtn.disabled = disabled;
-  els.clearBtn.disabled = disabled;
+  els.clearBtn.disabled = false;
 }
 
 function resetDrawing() {
   inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
   overlayCtx.clearRect(0, 0, els.overlay.width, els.overlay.height);
-  state.feature.reset();
+  state.feature?.reset();
   state.prevPoint = null;
   state.mode = "Pen up";
   state.hasInk = false;
@@ -716,21 +806,30 @@ function showFlash() {
   }, 1000);
 }
 
-async function clearSample() {
-  if (state.saving || state.clearing) {
+function clearSample() {
+  if (state.clearing) {
     return;
   }
+  state.operationId += 1;
+  state.uploadController?.abort();
+  state.uploadController = null;
+  state.saving = false;
+  state.clearing = true;
+  state.clearUntil = performance.now() + CLEAR_COOLDOWN_MS;
   const hadSample = state.hasInk
-    || state.feature.hasData()
+    || Boolean(state.feature?.hasData())
     || state.sampleStarted
     || state.recordedChunks.length > 0
     || Boolean(state.recorder);
-  setButtonsDisabled(true);
-  state.clearing = true;
-  const stopPromise = stopRecorder({ discard: true }).catch(() => null);
+  stopRecorder({ discard: true }).catch(() => null);
   resetDrawing();
-  await stopPromise;
+  drawVisible(null);
   setUpload(hadSample ? "Cleared" : "Nothing to clear", "neutral");
+  window.setTimeout(() => {
+    if (performance.now() >= state.clearUntil) {
+      state.clearing = false;
+    }
+  }, CLEAR_COOLDOWN_MS);
   state.clearing = false;
   setButtonsDisabled(false);
 }
@@ -778,6 +877,7 @@ async function registerServiceWorker() {
 
 async function boot() {
   state.feature = new FeatureExtractor();
+  setVersion();
   loadSettings();
   bindEvents();
   window.lucide?.createIcons();

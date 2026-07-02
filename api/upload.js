@@ -168,7 +168,8 @@ function decodeDataUrl(file, expectedPrefix) {
   if (!file || typeof file.dataUrl !== "string") {
     return null;
   }
-  const match = file.dataUrl.match(/^data:([^;,]+);base64,([A-Za-z0-9+/=\s]+)$/);
+  // MIME may carry parameters, e.g. "video/webm;codecs=vp9" from MediaRecorder.
+  const match = file.dataUrl.match(/^data:(.+?);base64,([A-Za-z0-9+/=\s]+)$/);
   if (!match) {
     const error = new Error("Invalid data URL");
     error.statusCode = 400;

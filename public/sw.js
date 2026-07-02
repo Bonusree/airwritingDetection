@@ -1,4 +1,4 @@
-const CACHE_NAME = "airwriting-pwa-2026-06-27-3";
+const CACHE_NAME = "airwriting-pwa-2026-07-02-1";
 const CORE_ASSETS = [
   "/",
   "/index.html",

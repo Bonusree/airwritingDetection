@@ -4,6 +4,14 @@ Air Writing Collector lets users draw in the air with a webcam, then saves a tra
 
 Users open a website on Windows, Linux, Android, or any modern browser. They do not install Python, Flask, OpenCV, or MediaPipe.
 
+## Live Demo
+
+Try it now — no installation needed:
+
+**[https://airwriting-detection-oymr.vercel.app/](https://airwriting-detection-oymr.vercel.app/)**
+
+Open the link in any modern browser, allow camera access, and start writing in the air.
+
 ## What Gets Saved
 
 Every saved sample is committed to your GitHub repository under:

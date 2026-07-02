@@ -3,7 +3,7 @@ import {
   HandLandmarker,
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
 
-const APP_VERSION = "2026.06.27.3";
+const APP_VERSION = "2026.07.02.1";
 const MODEL_PATH = "/models/hand_landmarker.task";
 const WASM_ROOT = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm";
 
@@ -82,6 +82,7 @@ const state = {
   mode: "Pen up",
   savedCount: 0,
   hasInk: false,
+  autoSaveBlocked: false,
   feature: null,
   deferredInstall: null,
 };
@@ -481,6 +482,7 @@ function updateFromDetection(result, now) {
       state.prevPoint = index;
       state.lastPenDownAt = now;
       state.hasInk = true;
+      state.autoSaveBlocked = false;
       state.feature.update(index.x, index.y, els.overlay.width, els.overlay.height, true);
     } else {
       state.prevPoint = null;
@@ -504,7 +506,7 @@ function updateFromDetection(result, now) {
   els.modeReadout.textContent = mode;
   els.pointsReadout.textContent = String(state.feature.pointCount());
 
-  const canAutoSave = state.sampleStarted && state.feature.hasData();
+  const canAutoSave = state.sampleStarted && state.feature.hasData() && !state.autoSaveBlocked;
   const elapsed = now - state.sampleStartedAt;
   const pauseProgress = canAutoSave && !penDown
     ? Math.min((now - state.lastPenDownAt) / PAUSE_MS, 1)
@@ -767,6 +769,9 @@ async function saveSample(auto = false) {
     console.info("Saved sample", result.paths, result.commit);
   } catch (error) {
     if (operationId === state.operationId) {
+      // Hold auto-save until the user draws again, otherwise the expired
+      // pause timer re-triggers a failing save on every frame.
+      state.autoSaveBlocked = true;
       setUpload(error.message || "Upload failed", "bad");
     }
   } finally {
@@ -789,6 +794,7 @@ function resetDrawing() {
   state.prevPoint = null;
   state.mode = "Pen up";
   state.hasInk = false;
+  state.autoSaveBlocked = false;
   state.sampleStarted = false;
   state.sampleStartedAt = 0;
   state.lastPenDownAt = 0;

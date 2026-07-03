@@ -47,6 +47,7 @@ const els = {
   username: document.getElementById("username"),
   label: document.getElementById("label"),
   uploadKey: document.getElementById("uploadKey"),
+  startBtn: document.getElementById("startBtn"),
   saveBtn: document.getElementById("saveBtn"),
   clearBtn: document.getElementById("clearBtn"),
   installBtn: document.getElementById("installBtn"),
@@ -327,15 +328,19 @@ function displayPoint(lm) {
   };
 }
 
-function beginSample(now) {
-  if (state.sampleStarted) {
+function startSample() {
+  if (state.sampleStarted || state.saving || state.clearing) {
     return;
   }
+  const now = performance.now();
   state.sampleStarted = true;
   state.sampleStartedAt = now;
   state.lastPenDownAt = now;
   state.recordedChunks = [];
   startRecorder();
+  els.startBtn.disabled = true;
+  els.saveBtn.disabled = false;
+  setUpload("Recording", "warn");
 }
 
 function pickMime() {
@@ -462,39 +467,41 @@ function updateFromDetection(result, now) {
 
     if (mode === "Draw") {
       penDown = true;
-      beginSample(now);
-      inkCtx.save();
-      inkCtx.strokeStyle = "#ffffff";
-      inkCtx.fillStyle = "#ffffff";
-      inkCtx.lineWidth = BRUSH_SIZE * 2;
-      inkCtx.lineCap = "round";
-      inkCtx.lineJoin = "round";
-      if (state.prevPoint) {
-        inkCtx.beginPath();
-        inkCtx.moveTo(state.prevPoint.x, state.prevPoint.y);
-        inkCtx.lineTo(index.x, index.y);
-        inkCtx.stroke();
-      }
-      inkCtx.beginPath();
-      inkCtx.arc(index.x, index.y, BRUSH_SIZE, 0, Math.PI * 2);
-      inkCtx.fill();
-      inkCtx.restore();
-      state.prevPoint = index;
-      state.lastPenDownAt = now;
-      state.hasInk = true;
-      state.autoSaveBlocked = false;
-      state.feature.update(index.x, index.y, els.overlay.width, els.overlay.height, true);
-    } else {
-      state.prevPoint = null;
-      state.feature.update(0, 0, els.overlay.width, els.overlay.height, false);
-      if (mode === "Erase") {
-        const wrist = displayPoint(landmarks[0]);
+      if (state.sampleStarted) {
         inkCtx.save();
-        inkCtx.globalCompositeOperation = "destination-out";
+        inkCtx.strokeStyle = "#ffffff";
+        inkCtx.fillStyle = "#ffffff";
+        inkCtx.lineWidth = BRUSH_SIZE * 2;
+        inkCtx.lineCap = "round";
+        inkCtx.lineJoin = "round";
+        if (state.prevPoint) {
+          inkCtx.beginPath();
+          inkCtx.moveTo(state.prevPoint.x, state.prevPoint.y);
+          inkCtx.lineTo(index.x, index.y);
+          inkCtx.stroke();
+        }
         inkCtx.beginPath();
-        inkCtx.arc(wrist.x, wrist.y, ERASE_RADIUS, 0, Math.PI * 2);
+        inkCtx.arc(index.x, index.y, BRUSH_SIZE, 0, Math.PI * 2);
         inkCtx.fill();
         inkCtx.restore();
+        state.prevPoint = index;
+        state.lastPenDownAt = now;
+        state.hasInk = true;
+        state.feature.update(index.x, index.y, els.overlay.width, els.overlay.height, true);
+      }
+    } else {
+      state.prevPoint = null;
+      if (state.sampleStarted) {
+        state.feature.update(0, 0, els.overlay.width, els.overlay.height, false);
+        if (mode === "Erase") {
+          const wrist = displayPoint(landmarks[0]);
+          inkCtx.save();
+          inkCtx.globalCompositeOperation = "destination-out";
+          inkCtx.beginPath();
+          inkCtx.arc(wrist.x, wrist.y, ERASE_RADIUS, 0, Math.PI * 2);
+          inkCtx.fill();
+          inkCtx.restore();
+        }
       }
     }
   } else {
@@ -506,17 +513,11 @@ function updateFromDetection(result, now) {
   els.modeReadout.textContent = mode;
   els.pointsReadout.textContent = String(state.feature.pointCount());
 
-  const canAutoSave = state.sampleStarted && state.feature.hasData() && !state.autoSaveBlocked;
-  const elapsed = now - state.sampleStartedAt;
-  const pauseProgress = canAutoSave && !penDown
-    ? Math.min((now - state.lastPenDownAt) / PAUSE_MS, 1)
-    : 0;
-
-  els.pauseBar.style.width = `${pauseProgress * 100}%`;
-  els.pauseBar.style.backgroundColor = pauseProgress >= 1 ? "var(--cyan)" : "var(--green)";
-
-  if (canAutoSave && (pauseProgress >= 1 || elapsed >= MAX_SAMPLE_MS)) {
-    saveSample(true);
+  if (state.sampleStarted) {
+    const elapsed = now - state.sampleStartedAt;
+    const progress = Math.min(elapsed / MAX_SAMPLE_MS, 1);
+    els.pauseBar.style.width = `${progress * 100}%`;
+    els.pauseBar.style.backgroundColor = "var(--green)";
   }
 
   return landmarks;
@@ -789,13 +790,20 @@ async function saveSample(auto = false) {
   } finally {
     if (operationId === state.operationId) {
       state.saving = false;
-      setButtonsDisabled(false);
+      resetButtons();
     }
   }
 }
 
 function setButtonsDisabled(disabled) {
+  els.startBtn.disabled = disabled;
   els.saveBtn.disabled = disabled;
+  els.clearBtn.disabled = false;
+}
+
+function resetButtons() {
+  els.startBtn.disabled = false;
+  els.saveBtn.disabled = true;
   els.clearBtn.disabled = false;
 }
 
@@ -847,9 +855,10 @@ function clearSample() {
     if (performance.now() >= state.clearUntil) {
       state.clearing = false;
     }
+    startSample();
   }, CLEAR_COOLDOWN_MS);
   state.clearing = false;
-  setButtonsDisabled(false);
+  resetButtons();
 }
 
 function bindEvents() {
@@ -857,6 +866,7 @@ function bindEvents() {
     input.addEventListener("input", persistSettings);
     input.addEventListener("change", persistSettings);
   }
+  els.startBtn.addEventListener("click", startSample);
   els.saveBtn.addEventListener("click", () => saveSample(false));
   els.clearBtn.addEventListener("click", () => {
     clearSample();

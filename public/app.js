@@ -582,6 +582,17 @@ function tick(now) {
   requestAnimationFrame(tick);
 }
 
+function inkOnBlack() {
+  const out = document.createElement("canvas");
+  out.width = inkCanvas.width;
+  out.height = inkCanvas.height;
+  const ctx = out.getContext("2d");
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(inkCanvas, 0, 0);
+  return out;
+}
+
 function canvasToBlob(canvas, type = "image/png") {
   return new Promise((resolve) => {
     let settled = false;
@@ -735,7 +746,7 @@ async function saveSample(auto = false) {
       return;
     }
     setUpload("Preparing drawing", "warn");
-    const imageBlob = await canvasToBlob(inkCanvas);
+    const imageBlob = await canvasToBlob(inkOnBlack());
     if (operationId !== state.operationId) {
       return;
     }

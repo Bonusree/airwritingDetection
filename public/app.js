@@ -582,13 +582,14 @@ function tick(now) {
   requestAnimationFrame(tick);
 }
 
-function inkOnBlack() {
+function inkForSave() {
   const out = document.createElement("canvas");
   out.width = inkCanvas.width;
   out.height = inkCanvas.height;
   const ctx = out.getContext("2d");
-  ctx.fillStyle = "#000000";
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, out.width, out.height);
+  ctx.globalCompositeOperation = "difference";
   ctx.drawImage(inkCanvas, 0, 0);
   return out;
 }
@@ -746,7 +747,7 @@ async function saveSample(auto = false) {
       return;
     }
     setUpload("Preparing drawing", "warn");
-    const imageBlob = await canvasToBlob(inkOnBlack());
+    const imageBlob = await canvasToBlob(inkForSave());
     if (operationId !== state.operationId) {
       return;
     }

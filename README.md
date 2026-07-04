@@ -8,9 +8,7 @@ Users open a website on Windows, Linux, Android, or any modern browser. They do 
 
 Try it now — no installation needed:
 
-**[https://airwriting-detection-4i2l811so-bonusree.vercel.app](https://airwriting-detection-4i2l811so-bonusree.vercel.app)**
-
-**[https://airwriting-detection-git-master-bonusree.vercel.app/](https://airwriting-detection-git-master-bonusree.vercel.app/)**
+**[https://airwriting-detection.vercel.app/](https://airwriting-detection.vercel.app/)**
 
 Open the link in any modern browser, allow camera access, and start writing in the air.
 

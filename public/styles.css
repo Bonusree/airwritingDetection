@@ -265,7 +265,8 @@ select:focus {
 }
 
 .toolbar button {
-  min-height: 44px;
+  min-height: 50px;
+  padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--panel-2);
@@ -274,12 +275,31 @@ select:focus {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-weight: 600;
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color .1s ease, transform .1s ease, border-color .1s ease;
 }
 
 .toolbar button.primary {
   border-color: rgba(56, 216, 121, .5);
   color: #d7ffe5;
+}
+
+.toolbar button:active:not(:disabled) {
+  transform: scale(.96);
+  background: #262e35;
+}
+
+.toolbar button.primary:active:not(:disabled) {
+  background: rgba(56, 216, 121, .18);
+}
+
+.toolbar button:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
 }
 
 .toolbar button:disabled {
@@ -290,6 +310,7 @@ select:focus {
 .toolbar button svg {
   width: 18px;
   height: 18px;
+  flex: 0 0 auto;
 }
 
 #installBtn {

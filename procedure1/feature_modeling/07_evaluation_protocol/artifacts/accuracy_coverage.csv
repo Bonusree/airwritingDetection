@@ -1,0 +1,41 @@
+baseline,coverage,threshold,kept_samples,accuracy
+Summary Features,0.102041,0.469517,15,0.333333
+Summary Features,0.204082,0.420434,30,0.433333
+Summary Features,0.306122,0.37338,45,0.444444
+Summary Features,0.401361,0.338977,59,0.542373
+Summary Features,0.503401,0.323002,74,0.554054
+Summary Features,0.605442,0.305523,89,0.550562
+Summary Features,0.70068,0.292037,103,0.533981
+Summary Features,0.802721,0.275372,118,0.559322
+Summary Features,0.904762,0.253667,133,0.556391
+Summary Features,1.0,0.227164,147,0.544218
+Sequence 128 Flattened,0.102041,0.950535,15,1.0
+Sequence 128 Flattened,0.204082,0.897508,30,0.766667
+Sequence 128 Flattened,0.306122,0.833226,45,0.733333
+Sequence 128 Flattened,0.401361,0.77714,59,0.694915
+Sequence 128 Flattened,0.503401,0.721884,74,0.675676
+Sequence 128 Flattened,0.605442,0.661002,89,0.640449
+Sequence 128 Flattened,0.70068,0.61066,103,0.631068
+Sequence 128 Flattened,0.802721,0.540937,118,0.610169
+Sequence 128 Flattened,0.904762,0.49068,133,0.578947
+Sequence 128 Flattened,1.0,0.30966,147,0.557823
+Image Descriptors,0.102041,1.0,15,0.466667
+Image Descriptors,0.204082,1.0,30,0.533333
+Image Descriptors,0.306122,1.0,45,0.666667
+Image Descriptors,0.401361,1.0,59,0.644068
+Image Descriptors,0.503401,1.0,74,0.675676
+Image Descriptors,0.605442,0.66902,89,0.640449
+Image Descriptors,0.70068,0.478829,103,0.61165
+Image Descriptors,0.802721,0.342113,118,0.618644
+Image Descriptors,0.904762,0.28816,133,0.631579
+Image Descriptors,1.0,0.235023,147,0.585034
+Skeleton Landmarks,0.102041,1.0,15,0.533333
+Skeleton Landmarks,0.204082,1.0,30,0.333333
+Skeleton Landmarks,0.306122,1.0,45,0.377778
+Skeleton Landmarks,0.401361,1.0,59,0.355932
+Skeleton Landmarks,0.503401,0.999788,74,0.351351
+Skeleton Landmarks,0.605442,0.791413,89,0.348315
+Skeleton Landmarks,0.70068,0.598825,103,0.349515
+Skeleton Landmarks,0.802721,0.415869,118,0.347458
+Skeleton Landmarks,0.904762,0.363212,133,0.338346
+Skeleton Landmarks,1.0,0.222802,147,0.326531

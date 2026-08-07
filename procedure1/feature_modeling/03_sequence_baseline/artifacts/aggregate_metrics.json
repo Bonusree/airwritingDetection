@@ -1,0 +1,40 @@
+{
+  "baseline": "sequence_128_flattened_with_train_augmentation",
+  "outer_folds": 5,
+  "labels": [
+    "অ",
+    "আ",
+    "ই",
+    "ঈ",
+    "ঔ"
+  ],
+  "metrics": {
+    "accuracy": {
+      "mean": 0.447113,
+      "std": 0.26031,
+      "min": 0.0,
+      "max": 0.65
+    },
+    "balanced_accuracy": {
+      "mean": 0.452206,
+      "std": 0.263711,
+      "min": 0.0,
+      "max": 0.65
+    },
+    "macro_f1": {
+      "mean": 0.443449,
+      "std": 0.260662,
+      "min": 0.0,
+      "max": 0.640152
+    },
+    "top2_accuracy": {
+      "mean": 0.679494,
+      "std": 0.3856,
+      "min": 0.0,
+      "max": 0.9
+    }
+  },
+  "outer_folds_with_unseen_test_labels": [
+    0
+  ]
+}

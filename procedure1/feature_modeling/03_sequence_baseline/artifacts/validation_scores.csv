@@ -1,0 +1,16 @@
+baseline,outer_fold_id,inner_fold_id,config_index,config,accuracy,balanced_accuracy,macro_f1,top2_accuracy
+sequence_128_flattened_with_train_augmentation,0,0,0,nearest_centroid,0.609375,0.619363,0.589714,0.859375
+sequence_128_flattened_with_train_augmentation,0,1,0,nearest_centroid,0.5,0.483333,0.444966,0.714286
+sequence_128_flattened_with_train_augmentation,0,2,0,nearest_centroid,0.55,0.625,0.556612,0.875
+sequence_128_flattened_with_train_augmentation,1,0,0,nearest_centroid,0.609375,0.614645,0.604817,0.90625
+sequence_128_flattened_with_train_augmentation,1,1,0,nearest_centroid,0.52381,0.44,0.407677,0.809524
+sequence_128_flattened_with_train_augmentation,1,2,0,nearest_centroid,0.5,0.6,0.606061,0.75
+sequence_128_flattened_with_train_augmentation,2,0,0,nearest_centroid,0.53125,0.541912,0.508217,0.765625
+sequence_128_flattened_with_train_augmentation,2,1,0,nearest_centroid,0.47619,0.458333,0.421556,0.666667
+sequence_128_flattened_with_train_augmentation,2,2,0,nearest_centroid,0.52381,0.377778,0.38,0.809524
+sequence_128_flattened_with_train_augmentation,3,0,0,nearest_centroid,0.609375,0.618443,0.593333,0.84375
+sequence_128_flattened_with_train_augmentation,3,1,0,nearest_centroid,0.404762,0.3875,0.358623,0.738095
+sequence_128_flattened_with_train_augmentation,3,2,0,nearest_centroid,0.571429,0.48,0.45974,0.857143
+sequence_128_flattened_with_train_augmentation,4,0,0,nearest_centroid,0.52381,0.504167,0.487278,0.690476
+sequence_128_flattened_with_train_augmentation,4,1,0,nearest_centroid,0.428571,0.36,0.302121,0.809524
+sequence_128_flattened_with_train_augmentation,4,2,0,nearest_centroid,0.55,0.633333,0.651516,0.75

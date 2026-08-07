@@ -1,0 +1,21 @@
+baseline,user_id,samples,labels_present,accuracy,balanced_accuracy,macro_f1,top2_accuracy,macro_roc_auc,ece_10_bin
+Summary Features,for_bonhi,1,ঔ,0.0,0.0,0.0,0.0,nan,0.535075
+Summary Features,user1,42,অ|আ|ই|ঈ,0.619048,0.616667,0.605297,0.738095,0.76849,0.351744
+Summary Features,user2,20,অ|আ|ই|ঈ,0.65,0.65,0.641667,0.9,0.866667,0.323071
+Summary Features,user3,20,অ|আ,0.25,0.366667,0.45098,0.8,0.906667,0.202437
+Summary Features,user4,64,অ|আ|ই|ঈ,0.5625,0.567647,0.54227,0.71875,0.724425,0.25927
+Sequence 128 Flattened,for_bonhi,1,ঔ,0.0,0.0,0.0,0.0,nan,0.5232
+Sequence 128 Flattened,user1,42,অ|আ|ই|ঈ,0.47619,0.458333,0.422985,0.738095,0.772743,0.287075
+Sequence 128 Flattened,user2,20,অ|আ|ই|ঈ,0.65,0.65,0.640152,0.9,0.896667,0.21539
+Sequence 128 Flattened,user3,20,অ|আ,0.5,0.533333,0.564394,0.9,0.733334,0.16333
+Sequence 128 Flattened,user4,64,অ|আ|ই|ঈ,0.609375,0.619363,0.589713,0.859375,0.85125,0.133293
+Image Descriptors,for_bonhi,1,ঔ,0.0,0.0,0.0,0.0,nan,0.5713
+Image Descriptors,user1,42,অ|আ|ই|ঈ,0.5,0.504167,0.49631,0.857143,0.79809,0.311567
+Image Descriptors,user2,20,অ|আ|ই|ঈ,0.4,0.4,0.375,0.7,0.685,0.345571
+Image Descriptors,user3,20,অ|আ,0.6,0.4,0.375,0.95,0.48,0.26256
+Image Descriptors,user4,64,অ|আ|ই|ঈ,0.703125,0.704473,0.706063,0.8125,0.805512,0.296875
+Skeleton Landmarks,for_bonhi,1,ঔ,0.0,0.0,0.0,0.0,nan,0.70856
+Skeleton Landmarks,user1,42,অ|আ|ই|ঈ,0.333333,0.320833,0.301139,0.52381,0.56046,0.213691
+Skeleton Landmarks,user2,20,অ|আ|ই|ঈ,0.25,0.25,0.208333,0.4,0.513333,0.123158
+Skeleton Landmarks,user3,20,অ|আ,0.55,0.633333,0.651515,0.85,0.78,0.448373
+Skeleton Landmarks,user4,64,অ|আ|ই|ঈ,0.28125,0.285417,0.232195,0.578125,0.544748,0.721146

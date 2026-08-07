@@ -1,0 +1,35 @@
+{
+  "clean_samples": 147,
+  "augmented_train_rows": 3528,
+  "summary_feature_count": 114,
+  "sequence_shape": [
+    147,
+    128,
+    11
+  ],
+  "image_shape": [
+    147,
+    224,
+    224
+  ],
+  "labels": [
+    "অ",
+    "আ",
+    "ই",
+    "ঈ",
+    "ঔ"
+  ],
+  "sequence_feature_names": [
+    "x",
+    "y",
+    "stroke_id_norm",
+    "delta_x",
+    "delta_y",
+    "sin_alpha",
+    "cos_alpha",
+    "sin_beta",
+    "cos_beta",
+    "same_stroke",
+    "diff_stroke"
+  ]
+}

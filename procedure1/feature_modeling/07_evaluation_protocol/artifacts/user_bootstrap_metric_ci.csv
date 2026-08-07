@@ -1,0 +1,25 @@
+baseline,metric,value,ci95_low,ci95_high,bootstrap_unit,bootstrap_repeats
+Summary Features,Accuracy,0.41631,0.17381,0.620119,user,1000
+Summary Features,Balanced Accuracy,0.440196,0.203167,0.620196,user,1000
+Summary Features,Macro-F1,0.448043,0.216767,0.60724,user,1000
+Summary Features,Top-2 Accuracy,0.631369,0.307619,0.831466,user,1000
+Summary Features,Macro ROC-AUC,0.816562,0.739113,0.886667,user,1000
+Summary Features,"ECE, 10 bins",0.334319,0.249297,0.437513,user,1000
+Sequence 128 Flattened,Accuracy,0.447113,0.221875,0.60375,user,1000
+Sequence 128 Flattened,Balanced Accuracy,0.452206,0.221667,0.611735,user,1000
+Sequence 128 Flattened,Macro-F1,0.443449,0.225429,0.599926,user,1000
+Sequence 128 Flattened,Top-2 Accuracy,0.679494,0.343347,0.891875,user,1000
+Sequence 128 Flattened,Macro ROC-AUC,0.813499,0.74647,0.878576,user,1000
+Sequence 128 Flattened,"ECE, 10 bins",0.264458,0.161727,0.400076,user,1000
+Image Descriptors,Accuracy,0.440625,0.22,0.621875,user,1000
+Image Descriptors,Balanced Accuracy,0.401728,0.180833,0.584289,user,1000
+Image Descriptors,Macro-F1,0.390475,0.174262,0.580211,user,1000
+Image Descriptors,Top-2 Accuracy,0.663929,0.325,0.885357,user,1000
+Image Descriptors,Macro ROC-AUC,0.692151,0.559522,0.803038,user,1000
+Image Descriptors,"ECE, 10 bins",0.357575,0.286087,0.467407,user,1000
+Skeleton Landmarks,Accuracy,0.282917,0.116667,0.440063,user,1000
+Skeleton Landmarks,Balanced Accuracy,0.297917,0.126531,0.494166,user,1000
+Skeleton Landmarks,Macro-F1,0.278636,0.120111,0.483787,user,1000
+Skeleton Landmarks,Top-2 Accuracy,0.470387,0.209524,0.694762,user,1000
+Skeleton Landmarks,Macro ROC-AUC,0.599635,0.523805,0.721187,user,1000
+Skeleton Landmarks,"ECE, 10 bins",0.442986,0.224414,0.661557,user,1000

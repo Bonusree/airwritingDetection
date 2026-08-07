@@ -1,0 +1,40 @@
+{
+  "baseline": "trajectory_image_descriptors",
+  "outer_folds": 5,
+  "labels": [
+    "অ",
+    "আ",
+    "ই",
+    "ঈ",
+    "ঔ"
+  ],
+  "metrics": {
+    "accuracy": {
+      "mean": 0.440625,
+      "std": 0.270939,
+      "min": 0.0,
+      "max": 0.703125
+    },
+    "balanced_accuracy": {
+      "mean": 0.401728,
+      "std": 0.256681,
+      "min": 0.0,
+      "max": 0.704473
+    },
+    "macro_f1": {
+      "mean": 0.390475,
+      "std": 0.256781,
+      "min": 0.0,
+      "max": 0.706063
+    },
+    "top2_accuracy": {
+      "mean": 0.663929,
+      "std": 0.381885,
+      "min": 0.0,
+      "max": 0.95
+    }
+  },
+  "outer_folds_with_unseen_test_labels": [
+    0
+  ]
+}

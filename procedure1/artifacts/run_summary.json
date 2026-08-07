@@ -1,0 +1,51 @@
+{
+  "generated_at_utc": "2026-08-02T14:41:19.014043+00:00",
+  "input_dir": "output",
+  "total_json_samples": 173,
+  "clean_samples": 147,
+  "excluded_samples": 26,
+  "exclusion_reasons": {
+    "missing_png": 26
+  },
+  "users": [
+    "for_bonhi",
+    "user1",
+    "user2",
+    "user3",
+    "user4"
+  ],
+  "labels": [
+    "অ",
+    "আ",
+    "ই",
+    "ঈ",
+    "ঔ"
+  ],
+  "split_policy": "leave_one_user_out",
+  "outer_fold_count": 5,
+  "inner_validation_folds_per_outer": {
+    "0": 3,
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 3
+  },
+  "nested_user_split_rows": 75,
+  "sample_split_rows": 2205,
+  "sample_role_rows": {
+    "train": 1176,
+    "val": 588,
+    "test": 441
+  },
+  "augmentations_per_sample": 3,
+  "augmented_train_rows": 3528,
+  "near_duplicate_threshold": 0.003,
+  "jump_abs_threshold": 0.35,
+  "jump_median_factor": 12.0,
+  "notes": [
+    "Outer folds hold out one full user as test.",
+    "Inner folds choose validation users only from the outer-fold training users.",
+    "Augmentation rows are generated only for train roles after train/validation/test assignment.",
+    "Video augmentation is recorded as deterministic per-row parameters; raw video files are not rewritten."
+  ]
+}

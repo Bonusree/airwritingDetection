@@ -1,0 +1,6 @@
+baseline,outer_fold_id,selected_config,validation_macro_f1,validation_balanced_accuracy
+sequence_256_flattened,0,nearest_centroid,0.458122,0.531599
+sequence_256_flattened,1,nearest_centroid,0.543231,0.632455
+sequence_256_flattened,2,nearest_centroid,0.440073,0.465946
+sequence_256_flattened,3,nearest_centroid,0.383962,0.457702
+sequence_256_flattened,4,nearest_centroid,0.425697,0.446111

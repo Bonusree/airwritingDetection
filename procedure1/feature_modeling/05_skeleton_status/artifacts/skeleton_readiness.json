@@ -1,6 +1,0 @@
-{
-  "mediapipe_available": true,
-  "clean_videos": 147,
-  "status": "ready",
-  "note": "Run extract_skeleton_features.py to materialize 21-hand-landmark tensors from video."
-}

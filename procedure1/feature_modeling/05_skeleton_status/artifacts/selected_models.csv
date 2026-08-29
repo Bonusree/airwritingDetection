@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,validation_macro_f1,validation_balanced_accuracy
-skeleton_landmark_summary,0,nearest_centroid,0.318534,0.361458
-skeleton_landmark_summary,1,knn_k_5,0.283384,0.29268
-skeleton_landmark_summary,2,ridge_alpha_10.0,0.320663,0.332217
-skeleton_landmark_summary,3,gaussian_nb,0.26495,0.29393
-skeleton_landmark_summary,4,gaussian_nb,0.405771,0.406111

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import http.server\")",
+      "Bash(npx --version)",
+      "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")"
+    ]
+  }
+}

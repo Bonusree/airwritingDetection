@@ -1,5 +1,0 @@
-baseline,accuracy_mean,balanced_accuracy_mean,macro_f1_mean,top2_accuracy_mean,outer_folds_with_unseen_test_labels
-Summary Features,0.41631,0.440196,0.448043,0.631369,0
-Sequence 128 Flattened,0.447113,0.452206,0.443449,0.679494,0
-Image Descriptors,0.440625,0.401728,0.390475,0.663929,0
-Skeleton Landmarks,0.282917,0.297917,0.278636,0.458512,0

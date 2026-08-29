@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,validation_macro_f1,validation_balanced_accuracy
-summary_features_with_train_augmentation,0,ridge_alpha_1.0,0.571664,0.601961
-summary_features_with_train_augmentation,1,ridge_alpha_10.0,0.400413,0.3856
-summary_features_with_train_augmentation,2,ridge_alpha_10.0,0.304983,0.296528
-summary_features_with_train_augmentation,3,ridge_alpha_10.0,0.527564,0.545131
-summary_features_with_train_augmentation,4,ridge_alpha_0.1,0.506932,0.503889

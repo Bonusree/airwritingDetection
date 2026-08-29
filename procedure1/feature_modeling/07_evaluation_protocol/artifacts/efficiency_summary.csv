@@ -1,5 +1,0 @@
-baseline,outer_folds,median_inference_ms,mean_model_parameters,mean_estimated_model_memory_kb
-Summary Features,5,0.038495,552.0,6.09375
-Sequence 128 Flattened,5,0.064722,6758.4,74.8
-Image Descriptors,5,0.125534,9076.8,71.972656
-Skeleton Landmarks,5,0.140511,7045.6,59.055469

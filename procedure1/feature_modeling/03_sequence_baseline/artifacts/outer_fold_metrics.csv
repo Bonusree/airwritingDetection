@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,train_samples,test_samples,missing_test_labels_from_train,accuracy,balanced_accuracy,macro_f1,top2_accuracy,median_inference_ms,model_parameters,estimated_model_memory_bytes
-sequence_128_flattened_with_train_augmentation,0,nearest_centroid,1022,1,ঔ,0.0,0.0,0.0,0.0,0.088787,5632,67584
-sequence_128_flattened_with_train_augmentation,1,nearest_centroid,735,42,,0.47619,0.458333,0.422986,0.738095,0.056928,7040,78848
-sequence_128_flattened_with_train_augmentation,2,nearest_centroid,889,20,,0.65,0.65,0.640152,0.9,0.060155,7040,78848
-sequence_128_flattened_with_train_augmentation,3,nearest_centroid,889,20,,0.5,0.533334,0.564394,0.9,0.064722,7040,78848
-sequence_128_flattened_with_train_augmentation,4,nearest_centroid,581,64,,0.609375,0.619363,0.589714,0.859375,0.08768,7040,78848

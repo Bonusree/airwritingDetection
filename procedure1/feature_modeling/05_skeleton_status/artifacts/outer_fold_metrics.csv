@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,train_samples,test_samples,missing_test_labels_from_train,accuracy,balanced_accuracy,macro_f1,top2_accuracy,median_inference_ms,model_parameters,estimated_model_memory_bytes
-skeleton_landmark_summary,0,nearest_centroid,146,1,ঔ,0.0,0.0,0.0,0.0,0.100464,1048,12576
-skeleton_landmark_summary,1,knn_k_5,105,42,,0.333333,0.320833,0.301138,0.52381,0.140511,27615,224692
-skeleton_landmark_summary,2,ridge_alpha_10.0,127,20,,0.25,0.25,0.208333,0.4,0.038167,1315,14712
-skeleton_landmark_summary,3,gaussian_nb,127,20,,0.55,0.633333,0.651516,0.65,0.268532,2625,25192
-skeleton_landmark_summary,4,gaussian_nb,83,64,,0.28125,0.285417,0.232195,0.71875,0.207908,2625,25192

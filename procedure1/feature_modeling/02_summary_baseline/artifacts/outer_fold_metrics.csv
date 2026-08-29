@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,train_samples,test_samples,missing_test_labels_from_train,accuracy,balanced_accuracy,macro_f1,top2_accuracy,median_inference_ms,model_parameters,estimated_model_memory_bytes
-summary_features_with_train_augmentation,0,ridge_alpha_1.0,1022,1,ঔ,0.0,0.0,0.0,0.0,0.06371,460,5504
-summary_features_with_train_augmentation,1,ridge_alpha_10.0,735,42,,0.619048,0.616667,0.605297,0.738095,0.049082,575,6424
-summary_features_with_train_augmentation,2,ridge_alpha_10.0,889,20,,0.65,0.65,0.641667,0.9,0.037543,575,6424
-summary_features_with_train_augmentation,3,ridge_alpha_10.0,889,20,,0.25,0.366667,0.450981,0.8,0.038495,575,6424
-summary_features_with_train_augmentation,4,ridge_alpha_0.1,581,64,,0.5625,0.567647,0.54227,0.71875,0.033281,575,6424

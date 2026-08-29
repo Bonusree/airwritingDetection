@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,validation_macro_f1,validation_balanced_accuracy
-sequence_128_flattened_with_train_augmentation,0,nearest_centroid,0.530431,0.575899
-sequence_128_flattened_with_train_augmentation,1,nearest_centroid,0.539518,0.551548
-sequence_128_flattened_with_train_augmentation,2,nearest_centroid,0.436591,0.459341
-sequence_128_flattened_with_train_augmentation,3,nearest_centroid,0.470565,0.495314
-sequence_128_flattened_with_train_augmentation,4,nearest_centroid,0.480305,0.499167

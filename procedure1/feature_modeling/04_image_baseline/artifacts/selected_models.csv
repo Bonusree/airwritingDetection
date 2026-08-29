@@ -1,6 +1,0 @@
-baseline,outer_fold_id,selected_config,validation_macro_f1,validation_balanced_accuracy
-trajectory_image_descriptors,0,knn_k_5,0.622156,0.634865
-trajectory_image_descriptors,1,ridge_alpha_10.0,0.496875,0.499861
-trajectory_image_descriptors,2,knn_k_3,0.575836,0.583865
-trajectory_image_descriptors,3,knn_k_5,0.615329,0.628864
-trajectory_image_descriptors,4,knn_k_1,0.386371,0.369722
